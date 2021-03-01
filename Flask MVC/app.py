@@ -1,28 +1,10 @@
-from flask import Flask, render_template
+from flask import Flask
 
-app = Flask('teste')
+app = Flask(__name__)
 
-LISTA = [
-    "Item 1",
-    "Item 2",
-    "Item 3"
-]
-@app.route('/')
-def home():
-    return render_template('index.html')
+from controllers import * 
 
-@app.route('/ola')
-def ola():
-    resposta = '<h1>Olá mundo no Flask</h1>'
-    
-    resposta = resposta + '<ul>'
-
-    for item in LISTA:
-        resposta += '<li>' + item + '</li>' 
-    
-    resposta = resposta + '</ul>'
-    
-    return resposta
-
-
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(
+        debug=True
+    )
