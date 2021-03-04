@@ -61,22 +61,88 @@ O Flask é um micro framework escrito em Python para a construção de aplicaç�
 
 Iniciando o Flask
 
+- A construção de uma aplicação Flask se resume basicamente a criação e execução de um objeto específico. Para criarmos uma pequena aplicação, vamos criar um arquivo app.py no nosso projeto, onde a aplicação será criada.
+
+```
 from flask import Flask
-
-
 
 app = Flask(__name__)
 
-
-
 from controllers import * 
 
-
-
 if __name__ == '__main__':
+    app.run(
+        debug=True
+    )
 
-  app.run(
+```
 
-​    debug=True
+Construindo um controller.py
 
-  )
+```
+##Precisamos da variavel app, que possui uma referência da aplicação que estamos usando. Pegamos a variavel app do módulo app
+from app import app 
+
+from flask import render_template
+
+@app.route('/ola') 
+##é o caminho da URL que responderá esse controle.
+def hello_world():
+	return 'Olá mundo'
+
+## Outra forma de lidar com elementos HTML
+@app.route('/ola')
+def ola():
+    return '<h1> testando </h1>'
+    
+## Utilizando o render_template
+##Obs: As paginas html precisam estar na pasta de 'templates' caso contrário o Flask não consegue puxar o html
+
+@app.route('/ola')
+def ola():
+    return render_template('ola.html')
+```
+
+- O Flask por padrão utiliza a porta 5000, então para vermos o hello world é necessário acessar http://localhost:5000/ola no navegador.
+
+Respondendo GET e POST
+
+- Todos os controles no Flask, por padrão, respondem apenas pelo GET. Para responder para o POST (ou qualquer outro método HTTP), é necessário configurar na definição de rota. 
+
+Exemplo: Crie um HTML de formulário
+
+```
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% extends 'index.html' %}
+    <h1>Formulário</h1>
+    <form method="POST">
+        <div>
+            <label for="nome">Nome</label>
+            <input name="nome" id="nome" />
+        </div>
+        <button type="submit">Enviar</button>
+    </form>
+</body>
+</html>
+```
+
+E adicione o seguinte método no controller.py
+
+```
+@app.route('/form', methods=['GET', 'POST'])
+def formularios():
+    if request.method == 'POST':
+        print("Isto é um POST feito por", request.form['nome'])
+    else:
+        print("Isto é um GET")
+    return render_template('formulario.html')
+```
+
