@@ -2,9 +2,10 @@ from app import app
 from flask import render_template, request
 
 
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html' , titulo = "Testando tag")
 
 @app.route('/ola')
 def ola():
