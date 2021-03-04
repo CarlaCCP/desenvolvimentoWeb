@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blueprints | {% block titulo %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css')}}">
+</head>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="{{ url_for('catalogo.index') }}">BluePrints Exemplo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('catalogo.index') }}">Home</a>
+                    {% if session.usuario %}
+                    <a class="botao-acesso" href="/sair">Sair</a>
+                    <span>{{ session.usuario}}</span>
+                    {% else %}
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/entrar">Entrar</a>
+                    </li>
+                    {% endif%}
+                </ul>
+            </div>
+        </nav>
+    </header>
+    {% block conteudo %}{% endblock %}
+</body>
+
+</html>

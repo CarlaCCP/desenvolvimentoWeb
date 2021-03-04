@@ -37,6 +37,101 @@ O caminho de uma requisição:
   - Métodos seguros: são aqueles que indicam que a requisição apenas trará alguma informação do servidor, sem alterar nada lá (GET, HEAD, OPTIONS e TRACE). 
   - Métodos idempotentes: são aqueles que diversas requisições iguais resultam a mesma coisa que apenas uma, ou seja, uma sequencia de GET para a mesma URL volta a mesma resposta todas as vezes (PUT e DELETE).
 
+#### **Manipulação do DOM**
+
+Quando o HTML é carregado pelo navegador na requisição inicial, começa a fase de **análise e tradução do código HTML** (chamado em inglês de *HTML parsing*), onde o navegador lê linha a linha do código HTML, entendendo as tags e traduzindo-as para os elementos que aparecerão no navegador (visuais ou de configuração). Esses elementos são representados por objetos em memória dentro do navegador e como o HTML é uma representação hierárquica de elementos (tags dentro de tags), o navegador representa essa estrutura usando uma árvore de objetos na memória. Essa representação em árvore dos elementos HTML de um documento HTML é chamada de **Document Object Model (DOM)**.
+
+O método mais simples para buscar um elemento na árvore é o **document.getElementById(id)**, outros exemplos:
+
+- getElementsByTagName: volta um vetor de elementos pela sua tag.
+- getElementsByClassName: volta um vetor com elementos contendo a classe passada.
+
+Para ter mais flexibilidade é recomendado os querySelectors: **querySelector** e **querySelectorAll**. A deferença entre os dois é que o  querySelector volta o primeiro elemento no DOM que obedecer o seletor passado (ou null se não houver) e o querySelectorAll sempre volta um nodeList (similar ao vetor) com os elementos que obedecem ao seletor passado (ou vazio caso nenhum obedeça).
+
+Obs: Para evitar dos scripts serem lidos logo no começo do recebimento HTML, usa-se **async** e o **defer**
+
+- async: torna todo o processo de baixar e traduzir o JavaScript em um processo assíncrono, ou seja, o navegador faz ambas as coisas ao mesmo tempo em que termina de analisar o código HTML. Esse atributo é recomendado para scripts que não precisam do DOM já estar carregado para funcionar, pois é possível que o script acabe de executar antes do DOM esteja pronto.
+- defer: faz com que o processo de baixar os arquivos de JavaScript seja assíncrono (assim como o **async**), mas sua tradução e execução são feitas após o carregamento completo do HTML e o DOM esteja pronto.
+
+
+
+Alterando e acessando **propriedades**
+
+- textContent: ignora tags HTML que estejam no conteúdo.
+- innerHTML: não ignora tags.
+
+
+
+Alterando e acessando **estilos**
+
+```
+<p style="color: red; font-weight="bold">Isso é um parágrafo!</p>
+```
+
+- Alterando
+
+```
+p.style.textTransform = 'uppercase'
+```
+
+- Acessando
+
+```
+p.style.color
+p.style.fontWeight
+```
+
+
+
+Alterando e acessando **classes**
+
+Outra propriedade que funciona de uma maneira diferente é o **class**. Como ele é multivalorado (permite vários valores diferentes) podemos manipular ele por suas propriedades diferentes: **className** e **classList**. A primeira (**className**) utiliza uma representação em string. Toda alteração (inclusão ou remoção de classes) só pode ser feita com operações de string, não sendo muito prático para manipulações mais complexas.
+
+Já a **classList** representa as classes como um vetor especial [DOMTokenList ] com todas as classes definidas no elemento HTML e alguns métodos práticos para manipular seus valores: **add** (adiciona uma classe nova), **remove** (remove uma classe específica, se existir) e **contains** (verifica se uma classe existe no vetor).
+
+
+
+Alterando **elementos internos**
+
+Exemplo de lista não ordenada
+
+```
+const item = document.createElement('li')
+item.textContent = "Minas Gerais"
+ul.appendChild(item) 
+
+<!-- Se quisermos adicionar em um posição especifica
+, podemos usar o insertBefore e se quisermos remover
+no próprio elemento item.remove() -->
+```
+
+
+
+Escutando eventos com JS
+
+```
+<button type="button">
+Isso é um botão
+</button>
+```
+
+```
+const botao = document.querySelector('button')
+
+/* A associação entre um listener e o seu evento
+é chamado de registtro de listener. Ocorre com o 'on' e 'addElementListener' */
+
+botao.onclick = function(event){
+	alert("Evento pelo onclick")
+}
+
+botao.addEventListener('click', function(event){
+	alert('Evento pelo addEventListener')
+})
+```
+
+A diferença entre as duas maneiras é que o método **addEventListener** permite que registremos quantas funções quisermos em um único evento, já as propriedades **on\*** permitem apenas um *listener* por evento. Podemos usar ambas as formas em conjunto, sendo que ao clicar no botão, primeiro a função do **onclick** é executada e depois as que foram registradas no **addEventListener**, por ordem de registro.
+
 
 
 #### Padrão MVC e Programação no Servidor
@@ -121,7 +216,6 @@ Exemplo: Crie um HTML de formulário
     <title>Document</title>
 </head>
 <body>
-    {% extends 'index.html' %}
     <h1>Formulário</h1>
     <form method="POST">
         <div>
@@ -145,4 +239,8 @@ def formularios():
         print("Isto é um GET")
     return render_template('formulario.html')
 ```
+
+
+
+
 
