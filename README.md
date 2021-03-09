@@ -337,3 +337,8 @@ Por padrão esses parâmetros são interpretados como Strings, mas se quisermos 
 
 Independente do tipo, para cada **PathParameter** definido na rota, a função do controle receberá o parâmetro de mesmo nome como entrada da função, então a rota **'/curso/<slug>'** precisa estar com a função definida como **def curso(slug)**. Já uma rota '/**blog/<int:ano>/<int:mes>/<int:dia>/<slug>'** teria uma função com a seguinte assinatura: **def blog_post(ano, mes, dia, slug)**.
 
+
+
+**Controle de Sessão: Autenticação e Autorização**
+
+![img](https://lh4.googleusercontent.com/mMWX8qxGGa6CY5IFPIl4a9uTS8AJIyQuQ2a1YGg6waJpog_Ri-LJ_adr_R7nhd09l3v2jwuoQWhwPMx4UB62TvcjILqaXM0u3pmxnwG3TRXWgCWHvGKMD9eDn2-JyXebtmzrpKEB)
