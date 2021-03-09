@@ -242,5 +242,98 @@ def formularios():
 
 
 
+#### URL's e Mapeamento de Rotas
 
+O *Domain Driven Design* (**DDD**), ou projeto orientado ao domínio, foi consolidado no livro de mesmo nome, escrito por Eric Evans em 2003 [Evans, E., 2003]. O DDD não é um padrão, arquitetura ou tecnologia, é um conjunto de boas práticas e estratégias para lidar com a alta complexidade de aplicações em termos de negócio. Ele está baseado em três grandes pilares: linguagem ubíqua, delimitação de contextos e mapeamento de contextos.
+
+
+
+**Modularização no Flask- Blueprints**
+
+Exemplo:  Temos três domínios nesse exemplo: o catálogo de cursos, que é o domínio principal da aplicação, motivo da sua criação; o sistema de usuários, um domínio auxiliar na utilização do sistema, para garantir o acesso correto de pessoas no cadastro dos cursos; e a área administrativa, domínio principal para o cadastro tanto de usuários quanto para administradores.
+
+**1- Primeiro módulo: Aplicação** 
+
+- A pasta aplicação terá um arquivo **__init__.py** e terá o flask importado
+
+```
+from flask import Flask
+from admin import admin_bp
+from catalogo import catalogo_bp
+
+
+app = Flask('aplicacao')
+app.config.from_object('aplicacao.config.Configuracao')
+
+app.register_blueprint(catalogo_bp)
+app.register_blueprint(admin_bp, url_prefix='/admin')
+```
+
+- Crie um pasta chamada config.py, lá vamos possibilitar o export da Aplicação. O debug = true fará com que a aplicação reinicie em qualquer alteração salva.
+
+```
+class Configuracao(object):
+    DEBUG = True
+```
+
+
+
+**2- Segundo módulo: Catálogo**
+
+Os Blueprints funcionam como pequenas aplicações Flask dentro de uma maior. Um módulo criado como Blueprint além de separar as funcionalidades em áreas, pode ser exportado para uso em outra aplicação Flask, ampliando sua capacidade de reaproveitamento de código.
+
+- init.py
+  - 'catalogo' : nome do módulo
+  - __name__: nome a ser usado na importação, indicando o uso do nome atual do módulo
+  -  template_folder: indicando qual diretório estará a pasta do html
+
+obs: Por padrão, as variáveis ficam com o nome do módulo sufixado por _bp.
+
+```
+from flask import Blueprint
+
+catalogo_bp = Blueprint(
+    'catalogo',
+    __name__,
+    template_folder='templates'
+)
+
+from . import controles
+```
+
+
+
+**3 - Terceiro módulo: Área Administrativa**
+
+A diferença estará no registro do Blueprint na aplicação. Como já temos um Bp principal (catalogo), precisamos diferenciar as URLs para que o Flask não confunda para onde vai cada requisição. O mais comum é que módulos diferentes da principal possuam um caminho de prefixo, ou **base path**. No caso do admin, queremos que todos os seus controles fiquem com o prefixo /admin na URL. 
+
+```
+app.register_blueprint(catalogo_bp)
+app.register_blueprint(admin_bp, url_prefix='/admin')
+```
+
+**Parametrização de Rotas**
+
+A ideia dos Path Parameter é criar regiões na parte do caminho (path) da URL que virem parâmetros de entrada nos nossos controles. O **slug** é a última parte da URL (como se fosse o recurso), identificando o conteúdo que será mostrado, usando um texto amigável para URLs (tudo em minúsculas, sem espaços e acentos). Por exemplo,  o curso Desenvolvimento Web terá a URL **/curso/desenvolvimento-web**, onde o **/curso** é apenas o prefixo indicando a categoria do que será mostrado e **/desenvolvimento-web** é o nome do curso de uma maneira amigável para a URL (novamente, tudo minúsculo e o hífen no lugar do espaço), ou seja, o **slug** do curso.
+
+```
+@catalogo_bp.route('/curso/<slug>')
+def curso(slug):
+    return render_template(
+        'curso.html',
+        curso=obter_curso(slug)
+    )
+```
+
+Por padrão esses parâmetros são interpretados como Strings, mas se quisermos tipar de outra maneira, podemos colocar o tipo na frente do nome, separado por dois pontos:
+
+**<int:param>:** para inteiros positivos.
+
+**<float:param>:** para decimais positivos.
+
+**<path:param>:** igual a string, mas aceitas barras no meio.
+
+**<uuid:param>:** aceita objetos do tipo UUID.
+
+Independente do tipo, para cada **PathParameter** definido na rota, a função do controle receberá o parâmetro de mesmo nome como entrada da função, então a rota **'/curso/<slug>'** precisa estar com a função definida como **def curso(slug)**. Já uma rota '/**blog/<int:ano>/<int:mes>/<int:dia>/<slug>'** teria uma função com a seguinte assinatura: **def blog_post(ano, mes, dia, slug)**.
 
